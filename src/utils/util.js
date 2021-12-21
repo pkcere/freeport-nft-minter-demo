@@ -68,10 +68,11 @@ export const utilSign2 = async (data, minter, password) =>
 		    resolve(result.result);
 	    });
 		});
+
 const confirmUploadMsg = (data) =>
     `Confirm asset upload
-    Title: ${data.title}
-    Description: ${data.description}
-    Address: ${data.minter}`;
+Title: ${data.title}
+Description: ${data.description}
+Address: ${data.minter}`;
 
 window.provider = importProvider();
