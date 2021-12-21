@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 //import { importProvider, getFreeportAddress, getContractAddress, createFreeport } from "@cere/freeport-sdk";
 const contractABI = require('./freeport-contract-abi.json')
-const contractAddress = "0x4F908981A3CFdd440f7a3d114b06b1695DA8373b"; //freeport prod contract 
+const contractAddress = "0x4F908981A3CFdd440f7a3d114b06b1695DA8373b"; //freeport prod contract
 
 export const connectWallet = async () => {
   if (window.ethereum) {
@@ -82,13 +82,13 @@ export const getCurrentWalletConnected = async () => {
   }
 };
 
-export const mintNFT = async(url, name, description, signer) => {
- //error handling
- if (url.trim() == "" || (name.trim() == "" || description.trim() == "")) { 
-   return {
-    success: false,
-    status: "Please make sure all fields are completed before minting.",
-   }
+export const mintNFT = async (url, name, description, signer) => {
+  //error handling
+  if (url.trim() == "" || (name.trim() == "" || description.trim() == "")) {
+    return {
+      success: false,
+      status: "Please make sure all fields are completed before minting.",
+    }
   }
   //make metadata
   const metadata = new Object();
@@ -96,16 +96,16 @@ export const mintNFT = async(url, name, description, signer) => {
   metadata.image = url;
   metadata.description = description;
 
-  let freeportcontract =  await new ethers.Contract(contractAddress, contractABI, signer);
+  let freeportcontract = await new ethers.Contract(contractAddress, contractABI, signer);
   try {
-    const txHash = await freeportcontract.issue(1,"0x6c00000000000000000000000000000000000000000000000000000000000000");
-    return{
+    const txHash = await freeportcontract.issue(1, "0x6c00000000000000000000000000000000000000000000000000000000000000");
+    return {
       success: true,
       //status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + JSON.stringify(txHash)
       status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + txHash.hash
       //status: signer.signMessage(txHash)
     }
-  } catch(error) {
+  } catch (error) {
     return {
       success: false,
       status: "Something went wrong: " + error.message
