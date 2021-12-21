@@ -1,3 +1,6 @@
+import {
+    importProvider,
+} from "@cere/freeport-sdk";
 // import Web3 from 'web3';
 // const web3 = new Web3(web3.currentProvider);
 
@@ -21,14 +24,18 @@ export const utilStr2ByteArr = (str) => {
     return arr;
 }
 
+const sleep1 = async () => new Promise((resolve, _) => {
+	setTimeout(() => resolve(), 1000);
+})
 
-export const utilSign = async (data, minter) =>
-    new Promise((resolve, reject) => {
-			window.web3.personal.sign(window.web3.toHex(confirmUploadMsg(data)), minter, function(err, signature) {
-			    if (err) return reject(err);
-      		resolve(signature);
-			})
-		});
+export const utilSign = async (provider, data, minter) => {
+	const signer = provider.getSigner();
+
+	await sleep1();
+
+	const signature = await signer.signMessage(confirmUploadMsg(data));
+	return signature;
+};
 
 export const utilSign2 = async (data, minter, password) =>
     // window.web3.eth.personal.sign(confirmUploadMsg(data), minter, password)
@@ -61,9 +68,11 @@ export const utilSign2 = async (data, minter, password) =>
 		    resolve(result.result);
 	    });
 		});
+
 const confirmUploadMsg = (data) =>
     `Confirm asset upload
-    Title: ${data.title}
-    Description: ${data.description}
-    Address: ${data.minter}`;
+Title: ${data.title}
+Description: ${data.description}
+Address: ${data.minter}`;
 
+window.provider = importProvider();

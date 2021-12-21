@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mintNftWebApp } from "./utils/integration.js";
+import { mintNftWebApp } from "./utils/mint.js";
 
 export default (_) => {
   const [tx, setTx] = useState(null);
