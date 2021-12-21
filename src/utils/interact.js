@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 const contractABI = require('./freeport-contract-abi.json')
 const contractAddress = "0x4F908981A3CFdd440f7a3d114b06b1695DA8373b"; //freeport prod contract 
 
-
 export const connectWallet = async () => {
   if (window.ethereum) {
     try {
@@ -18,7 +17,7 @@ export const connectWallet = async () => {
     } catch (err) {
       return {
         address: "",
-        status: "😥 " + err.message,
+        status: err.message,
       };
     }
   } else {
@@ -61,7 +60,7 @@ export const getCurrentWalletConnected = async () => {
     } catch (err) {
       return {
         address: "",
-        status: "😥 " + err.message,
+        status: err.message,
       };
     }
   } else {
@@ -104,6 +103,7 @@ export const mintNFT = async(url, name, description, signer) => {
       success: true,
       //status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + JSON.stringify(txHash)
       status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + txHash.hash
+      //status: signer.signMessage(txHash)
     }
   } catch(error) {
     return {
