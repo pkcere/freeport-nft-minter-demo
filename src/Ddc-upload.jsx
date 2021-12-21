@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { upload2DDC } from "./utils/integration";
+import { upload2DDC } from "./utils/upload";
 
 export default (_) => {
 	const initiateUpload = (_) =>
@@ -9,6 +9,6 @@ export default (_) => {
 		);
 
 	return (
-		<button onClick={initiateUpload}> Upload </button>
+		<button onClick={initiateUpload}> DDC Upload </button>
 	);
 }
