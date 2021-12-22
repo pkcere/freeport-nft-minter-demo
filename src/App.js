@@ -6,9 +6,9 @@ import DdcUploader from "./Ddc-upload";
 function App() {
   return (
     <div className="App">
-      <FpMinter/>
+      {/* <FpMinter/>
       <DdcUploader/>
-      <hr/>
+      <hr/> */}
       <Minter></Minter>
     </div>
   );

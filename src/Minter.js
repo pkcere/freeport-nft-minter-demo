@@ -1,11 +1,10 @@
-// Dependencies
-// npm install ethers
-// npm install react-canvas-draw --save
-
 import { ethers } from "ethers";
 import { React, useEffect, useState } from "react";
 import CanvasDraw from "react-canvas-draw";
 import { connectWallet, getCurrentWalletConnected, mintNFT } from "./utils/interact.js";
+import { mintNftWebApp} from "./utils/interact.js"; 
+import { upload2DDC, getUploadStatus } from "./utils/upload";
+// No longer need mint.js
 
 const Minter = (props) => {
 
@@ -19,6 +18,15 @@ const Minter = (props) => {
   const [signer, setSigner] = useState(null);
   const [contractAddress, setContractAddress] = useState(null);
   const [freeport, setFreeport] = useState(null);
+  
+  // new variables
+  const [metadata, setMetadata] = useState("");
+  const [cid, setCid] = useState(null);
+
+  // from Fp-Minter.jsx
+  const [tx, setTx] = useState(null);
+  const [qty, setQty] = useState(1);
+
 
 function addWalletListener() {
   if (window.ethereum) {
@@ -64,11 +72,35 @@ const onMintPressed = async () => {
     setProvider(tempProvider);
     setSigner(tempSigner);
     
-    const { status } = await mintNFT(url, name, description, tempSigner);
+    //const { status } = await mintNFT(url, name, description, tempSigner);
+    const { status } = await mintNFT(metadata, qty, tempSigner);
     setStatus(status);
 };
 
-  return (
+  // From Fp-Minter.jsx
+  const submitMintTx = async () => {
+    //const tx = await mintNftWebApp(+qty, metadata);
+    //setTx(tx.hash);
+  const { status } = await mintNftWebApp(+qty, metadata)
+  setStatus(status);
+  }
+
+  const onUploadPress = async () => {
+    let data = "blah blah";
+    let title = "My asset";
+    let description = "My asset's description"
+    const uploadId = await upload2DDC(data, title, description);
+    
+    setStatus("Uploading asset to DDC... " + getUploadStatus(uploadId));
+    while (getUploadStatus(uploadId) < 100) {
+    //while (true) {
+      //setStatus("Uploading asset to DDC... " + getUploadStatus(uploadId));
+      //console.log(getUploadStatus(uploadId));
+    }
+    console.log(getUploadStatus(uploadId))
+  }
+
+  return (   
     <div className="Minter">
       <button id="walletButton" onClick={connectWalletPressed}>
         {walletAddress.length > 0 ? (
@@ -84,7 +116,7 @@ const onMintPressed = async () => {
       <br></br>
       <h1 id="title">Freeport NFT-minter demo</h1>
       <p>
-        Draw your image below, give it a name, a description, then press "Mint."
+        Draw your image below, add metadata, select a quantity, then press "Mint."
       </p>
 
 
@@ -96,27 +128,31 @@ const onMintPressed = async () => {
         />
 
       <form>
-        <h2>Or link to asset (for now): </h2>
+        &nbsp;
+        <h2> Metadata: </h2>
         <input
           type="text"
           placeholder=""
-          onChange={(event) => setURL(event.target.value)}
+          onChange={(event) => setMetadata(event.target.value)}
         />
-        <h2>Name: </h2>
+        <h2> Quantity: </h2>
         <input
-          type="text"
+          type="number"
           placeholder=""
-          onChange={(event) => setName(event.target.value)}
-        />
-        <h2>Description: </h2>
-        <input
-          type="text"
-          placeholder=""
-          onChange={(event) => setDescription(event.target.value)}
+          value={qty}
+          onChange={(event) => setQty(event.target.value)}
         />
       </form>
       <button id="mintButton" onClick={onMintPressed}>
-        Mint NFT
+        Mint with Ethers.js
+      </button>      
+      &nbsp;
+      <button id="mintButton" onClick={submitMintTx}>
+        Mint with Freeport SDK
+      </button>
+      &nbsp;
+      <button id="mintButton" onClick={onUploadPress}>
+        Upload to Cere DDC
       </button>
       <p id="status">
         {status}

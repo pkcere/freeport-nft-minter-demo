@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
-//import { importProvider, getFreeportAddress, getContractAddress, createFreeport } from "@cere/freeport-sdk";
+import { importProvider, getFreeportAddress, getContractAddress, createFreeport } from "@cere/freeport-sdk";
+import { utilStr2ByteArr } from "./util";
 const contractABI = require('./freeport-contract-abi.json')
 const contractAddress = "0x4F908981A3CFdd440f7a3d114b06b1695DA8373b"; //freeport prod contract
 
@@ -82,28 +83,61 @@ export const getCurrentWalletConnected = async () => {
   }
 };
 
-export const mintNFT = async (url, name, description, signer) => {
+//export const mintNFT = async (url, name, description, signer) => {
+export const mintNFT = async (metadata, qty, signer) => {
   //error handling
-  if (url.trim() == "" || (name.trim() == "" || description.trim() == "")) {
+  if (metadata.trim() == "" || (qty < 1)) {
     return {
       success: false,
-      status: "Please make sure all fields are completed before minting.",
+      status: "Make sure all fields are completed before minting.",
     }
   }
-  //make metadata
-  const metadata = new Object();
-  metadata.name = name;
-  metadata.image = url;
-  metadata.description = description;
 
   let freeportcontract = await new ethers.Contract(contractAddress, contractABI, signer);
   try {
-    const txHash = await freeportcontract.issue(1, "0x6c00000000000000000000000000000000000000000000000000000000000000");
+    const txHash = await freeportcontract.issue(1, utilStr2ByteArr(metadata));
     return {
       success: true,
       //status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + JSON.stringify(txHash)
       status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + txHash.hash
       //status: signer.signMessage(txHash)
+    }
+  } catch (error) {
+    return {
+      success: false,
+      status: "Something went wrong: " + error.message
+    }
+  }
+};
+
+// Assumes Metamask or some other web3 wallet extension
+// Assumes browser environment
+export const mintNftWebApp = async (quantity, strMetadata) => {
+  if (strMetadata.trim() == "" || (quantity < 1)) {
+    return {
+      success: false,
+      status: "Make sure all fields are completed before minting.",
+    }
+  }
+  // e.g. "ethereum" object Metamask
+  const provider = importProvider();
+  //console.log(provider);
+
+  // env is one of: "stage" or "prod"
+  const env = "prod"; // or stage or dev. prod is default
+
+  // Pick smart contract address based on the environment
+  const contractAddress = await getFreeportAddress(provider, env);
+
+  // SDK object
+  const apiInput = { provider, contractAddress };
+  const cereFreeport = createFreeport(apiInput);
+
+  try {
+    const tx = await cereFreeport.issue(quantity, utilStr2ByteArr(strMetadata));
+    return {
+      success: true,
+      status: "✅ Check out your transaction on Polygonscan: https://mumbai.polygonscan.com/tx/" + tx.hash
     }
   } catch (error) {
     return {

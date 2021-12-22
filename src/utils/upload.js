@@ -15,6 +15,7 @@ import { get as httpGet, post as httpPost } from "axios";
 
 // Assumes Metamask or some other web3 wallet extension
 // Assumes browser environment
+const uploadUrl = () => "https://ddc.freeport.dev.cere.network/assets/v1";
 export const upload2DDC = async (data, title, description) => {
     // e.g. "ethereum" object Metamask
     const provider = importProvider()
@@ -33,9 +34,12 @@ export const upload2DDC = async (data, title, description) => {
         description //Descriptive text
     };
     const uploadId = await upload(uploadUrl(), uploadData);
-    const cid = await waitForDDCUpload(uploadId);
-    return cid;
+    //const cid = await waitForDDCUpload(uploadId);
+    ///return cid;
+	return uploadId;
 };
+
+
 // Post HTTP request, parse response and return uploadId
 const upload = async (url, data) => {
 	let fdata = new FormData();
@@ -59,6 +63,11 @@ const upload = async (url, data) => {
 	});
 }
 
+const statusUrl = (uploadId) => `https://ddc.freeport.dev.cere.network/assets/v1/${uploadId}`;
+const getUploadResponse = (uploadId) => httpGet(statusUrl(uploadId));
+export const getUploadStatus = async (uploadId) => await getUploadResponse(uploadId).progress.DDC_UPLOAD;
+export const getContentID = async (uploadId) => await waitForDDCUpload(uploadId);
+
 // Poll upload status URL until we get a "result" field (cid) or error.
 // returns cid
 const waitForDDCUpload = async (uploadId) => {
@@ -74,11 +83,7 @@ const waitForDDCUpload = async (uploadId) => {
 	}
 };
 
-const getUploadStatus = (uploadId) => httpGet(statusUrl(uploadId));
 
 const sleep10 = async () => new Promise((resolve, _) => {
 	setTimeout(() => resolve(), 10*1000);
 });
-
-const statusUrl = (uploadId) => `https://ddc.freeport.dev.cere.network/assets/v1/${uploadId}`;
-const uploadUrl = () => "https://ddc.freeport.dev.cere.network/assets/v1";
