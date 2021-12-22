@@ -7,7 +7,7 @@ import {
     utilGetAccounts,
     utilGetOwnerAddress,
     utilGetEncPubKey,
-    utilSign,
+    utilSignUpload,
     utilStr2ByteArr
 } from "./util";
 
@@ -22,7 +22,8 @@ export const upload2DDC = async (data, title, description) => {
     const accounts = await utilGetAccounts(ethereum);
     const minter = await utilGetOwnerAddress(ethereum, accounts);
     const minterEncryptionKey = await utilGetEncPubKey(ethereum, accounts);
-    const signature = await utilSign(provider, {title, description, minter}, minter);
+    const signature = await utilSignUpload(provider, minter,
+    	{title, description, minter});
 
     const uploadData = {
         minter, // Owner address
@@ -32,8 +33,8 @@ export const upload2DDC = async (data, title, description) => {
         title, // Asset title
         description //Descriptive text
     };
-    const uploadId = await upload(uploadUrl(), uploadData);
-    const cid = await waitForDDCUpload(uploadId);
+    const httpRes = await upload(uploadUrl(), uploadData);
+    const cid = await waitForDDCUpload(httpRes.data);
     return cid;
 };
 // Post HTTP request, parse response and return uploadId
@@ -61,9 +62,9 @@ const upload = async (url, data) => {
 
 // Poll upload status URL until we get a "result" field (cid) or error.
 // returns cid
-const waitForDDCUpload = async (uploadId) => {
-	for (;;) {
-		const uploadStatus = await getUploadStatus(uploadId);
+const waitForDDCUpload = async (uploadStatus) => {
+	const uploadId = uploadStatus.id;
+	for (let i=0; i < 3; i++) {
 		if (uploadStatus.result) {
 			return uploadStatus.result;
 		}
@@ -71,7 +72,10 @@ const waitForDDCUpload = async (uploadId) => {
 			throw new Error("DDC Upload failed");
 		}
 		await sleep10();
+		const httpRes = await getUploadStatus(uploadId);
+		uploadStatus = httpRes.data;
 	}
+	throw new Error("Unable to get upload status after 3 attempts");
 };
 
 const getUploadStatus = (uploadId) => httpGet(statusUrl(uploadId));

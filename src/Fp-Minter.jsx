@@ -12,6 +12,7 @@ export default (_) => {
   }
   return (
     <div className="Minter">
+      <h2> Mint Freeport Token </h2>
       <div>
         <span> Quantity: </span>
         <input type="number" placeholder="quantity" value={qty} onChange={onQtyInput}/>

@@ -28,51 +28,35 @@ const sleep1 = async () => new Promise((resolve, _) => {
 	setTimeout(() => resolve(), 1000);
 })
 
-export const utilSign = async (provider, data, minter) => {
+export const utilSignUpload = async (provider, minter, data) =>
+	utilSign(provider, minter, confirmUploadMsg(data));
+
+export const utilSignDownload = async (provider, minter, cid, address) =>
+	utilSign(provider, minter, confirmDownloadMsg(minter, cid, address));
+
+export const utilSign = async (provider, minter, text) => {
 	const signer = provider.getSigner();
 
+	// For some reason, metamask throws error on the
+	// signature part. Not sure if it's an issue on our
+	// side or a metamask issue
 	await sleep1();
 
-	const signature = await signer.signMessage(confirmUploadMsg(data));
+	const signature = await signer.signMessage(text);
 	return signature;
 };
-
-export const utilSign2 = async (data, minter, password) =>
-    // window.web3.eth.personal.sign(confirmUploadMsg(data), minter, password)
-    new Promise((resolve, reject) => {
-      const method = 'personal_sign';
-		  window.web3.currentProvider.sendAsync({
-		    method,
-		    data: confirmUploadMsg(data),
-		    from: minter,
-		  }, function (err, result) {
-		    if (err) return reject(err);
-		    if (result.error) return reject(result.error)
-		    console.log('PERSONAL SIGNED:' + JSON.stringify(result.result))
-
-		    // console.log('recovering...')
-		    // const msgParams = { data: msg }
-		    // msgParams.sig = result.result
-		    // console.dir({ msgParams })
-		    // const recovered = sigUtil.recoverPersonalSignature(msgParams)
-		    // console.dir({ recovered })
-
-		    // if (recovered === from ) {
-		    //   console.log('SigUtil Successfully verified signer as ' + from)
-		    //   window.alert('SigUtil Successfully verified signer as ' + from)
-		    // } else {
-		    //   console.dir(recovered)
-		    //   console.log('SigUtil Failed to verify signer when comparing ' + recovered.result + ' to ' + from)
-		    //   console.log('Failed, comparing %s to %s', recovered, from)
-		    // }
-		    resolve(result.result);
-	    });
-		});
 
 const confirmUploadMsg = (data) =>
     `Confirm asset upload
 Title: ${data.title}
 Description: ${data.description}
 Address: ${data.minter}`;
+
+const confirmDownloadMsg = (minter, cid, address) =>
+    `Confirm identity:
+Minter: ${minter}
+CID: ${cid}
+Address: ${address}`;
+
 
 window.provider = importProvider();
