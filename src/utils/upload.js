@@ -8,7 +8,6 @@ import {
     utilGetOwnerAddress,
     utilGetEncPubKey,
     utilSignUpload,
-    utilStr2ByteArr
 } from "./util";
 
 import { get as httpGet, post as httpPost } from "axios";
@@ -42,7 +41,7 @@ const upload = async (url, data) => {
 	let fdata = new FormData();
 	fdata.append('minter', data.minter);
 	fdata.append('file', new File(
-		utilStr2ByteArr(data.file),
+		[data.file],
 		"my-ddc-file.txt", {type: "text/plain",}
 		));
 	fdata.append('signature', data.signature);
