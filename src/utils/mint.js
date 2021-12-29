@@ -8,6 +8,16 @@ import {
     utilStr2ByteArr,
 } from "./util";
 
+// Register for "TransferSingle" event and grab NFT ID when called
+const getTokenDetails = async (contract) => new Promise((resolve, reject) => {
+    const listener = (_addr1, _x, _addr2, token, _qty, _tx) => {
+        contract.removeListener(listener);
+        resolve(token._hex);
+    };
+    contract.on("TransferSingle", listener);
+});
+
+
 // Assumes Metamask or some other web3 wallet extension
 // Assumes browser environment
 export const mintNftWebApp = async (quantity, strMetadata) => {
@@ -23,14 +33,16 @@ export const mintNftWebApp = async (quantity, strMetadata) => {
 
     // SDK object
     const apiInput = { provider, contractAddress };
-    const cereFreeport = createFreeport(apiInput);
+    const contract = createFreeport(apiInput);
 
-    const tx = await cereFreeport.issue(
+    const tx = await contract.issue(
         quantity,
         utilStr2ByteArr(strMetadata)
     );
 
-    return tx;
+    // Returns an object with two fields: nftId and tx
+    const nftId = await getTokenDetails(contract);
+    return { nftId, tx };
 };
 
 

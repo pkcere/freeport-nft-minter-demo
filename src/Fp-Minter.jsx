@@ -4,11 +4,14 @@ import { mintNftWebApp } from "./utils/mint.js";
 export default (_) => {
   const [tx, setTx] = useState(null);
   const [qty, setQty] = useState(4);
+  const [nftId, setNftId] = useState(null);
 
   const onQtyInput = e => setQty(e.target.value);
   const submitMintTx = async () => {
-    const tx = await mintNftWebApp(+qty, "my metadata");
+    const {nftId, tx} = await mintNftWebApp(+qty, "my metadata");
+
     setTx(tx.hash);
+    setNftId(nftId);
   }
   return (
     <div className="Minter">
@@ -19,6 +22,7 @@ export default (_) => {
       </div>
       <button onClick={submitMintTx}> Mint with FP API </button>
       { tx ? <TxLink tx={tx}/> : ""}
+      { nftId ? <div> NFT ID: {nftId}</div> : null}
     </div>
   );
 };
