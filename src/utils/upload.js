@@ -83,5 +83,5 @@ const sleep10 = async () => new Promise((resolve, _) => {
 	setTimeout(() => resolve(), 10*1000);
 });
 
-const statusUrl = (uploadId) => `https://ddc.freeport.dev.cere.network/assets/v1/${uploadId}`;
-const uploadUrl = () => "https://ddc.freeport.dev.cere.network/assets/v1";
+const statusUrl = (uploadId) => `https://ddc.freeport.stg.cere.network/assets/v1/${uploadId}`;
+const uploadUrl = () => "https://ddc.freeport.stg.cere.network/assets/v1";
