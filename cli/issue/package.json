@@ -1,0 +1,18 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cere/freeport-sdk": "^4.1.0",
+    "bs58": "^4.0.1",
+    "ethers": "^5.5.2",
+    "winston": "^3.3.3"
+  }
+}
