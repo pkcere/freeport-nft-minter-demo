@@ -1,4 +1,5 @@
-This is a self-contained, complete code sample that demonstrates how to mint a
+This is a self-contained, complete code sample that demonstrates how to issue
+(create) a
 Freeport token.
 
 It uses a hard-coded private key, contract address etc in order to make the code
