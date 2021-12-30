@@ -26,8 +26,9 @@ const main = async (quantity, strMetadata) => {
     logger.info("... ✅ done!");
 
     logger.info("Retrieving NFT ID...");
-    const nftId = await getTokenDetails(contract);
-    logger.info("... ✅ done!");
+    const receipt = await tx.wait();
+    const nftId = receipt.events[0].args[3].toString();
+    logger.info("... ✅ " + nftId);
 
     return { nftId, tx };
 };
@@ -44,6 +45,5 @@ const getTokenDetails = async (contract) => new Promise((resolve, reject) => {
 
 
 main(1, "optional token meta data")
-.then((results) => logger.info("NFT ID:" + results.nftId))
 .then(() => process.exit(0));
 
