@@ -16,7 +16,7 @@ export const mintNftWebApp = async (quantity, strMetadata) => {
     const provider = importProvider();
 
     // env is one of: "stage" or "prod"
-    const env = "prod"; // or stage or dev. prod is default
+    const env = "stage"; // or stage or dev. prod is default
 
     // Pick smart contract address based on the environment
     const contractAddress = await getFreeportAddress(provider, env);
