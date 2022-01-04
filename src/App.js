@@ -7,11 +7,13 @@ import DdcDownloader from "./Ddc-download";
 import Attacher from "./Attacher";
 import TokenSupply from "./Supply";
 import TokenList from "./Lister";
+import Transfer from "./Transfer";
 
 function App() {
   return (
     <div className="App">
       <TokenList/>
+      <Transfer/>
       <TokenSupply />
       <Attacher />
       <DdcUploader/>

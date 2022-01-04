@@ -29,8 +29,8 @@ const TokenListTable = ({ownedList}) => (
 			</tr>
 		</thead>
 		<tbody>
-			{ownedList.map(token => (
-				<tr>
+			{ownedList.map((token,i) => (
+				<tr key={i}>
 					<td> {token.quantity} / {token.supply} </td>
 					<td> {token.nftId} </td>
 				</tr>
