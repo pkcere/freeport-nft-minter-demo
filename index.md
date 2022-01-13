@@ -1,4 +1,4 @@
-## Welcome to GitHub Pages
+## Welcome to Freeport Minting Tutorial
 
 You can use the [editor on GitHub](https://github.com/pkcere/freeport-nft-minter-demo/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
