@@ -100,6 +100,8 @@ DDC nodes would offer the following benefits to ecosystem partners:
   - Additional reveneues for providing the service
   - Faster access with lower latency by running custom services closer to the nodes
 
+`TODO` - describe what it takes to run a node. E.g. Tokens, running blockchain nodes (??), staking etc.
+
 # References
 
   - [Cere Freeport Github](https://github.com/Cerebellum-Network/Cere-Freeport)
