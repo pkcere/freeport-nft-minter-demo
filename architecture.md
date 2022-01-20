@@ -43,8 +43,8 @@ NFT creation with Freeport involves the following steps:
    which simplifies the process or breaking up the content into chunks, encrypting and storing them in the DDC.
 2. Minting NFT: Minting an NFT token is a straightforward process of invoking `issue()` function 
    on the Freeport NFT contract. This is a standard ERC1155 contract that assigns an NFT ID to your token.
-3. Attaching one or more assets with the token: NFT tokens in Freeport ecosystem do not 
-   contain direct references to the assets like in other systems. Instead, one or more Content IDs (CID) 
+3. Attaching one or more assets with the token: NFT tokens in Freeport ecosystem 
+   contain direct references to the assets unlike many other systems. One or more Content IDs (CID) 
    are attached to tokens. This is supported by the `NFTAttachment` contract.
 4. Configuration of royalties, pricing, auction parameters etc.  Once a token is created, Freeport smart 
    contracts can be used to define the following, onchain:
@@ -61,7 +61,7 @@ NFT creation with Freeport involves the following steps:
 
 ## NFT Transactions
 
-NFT sales are supported by `XXX` smart contracts, designed for use by marketplaces. When a sale or trade happens, 
+NFT sales are supported by `Exchange` and `Auction` smart contracts, designed for use by marketplaces. When a sale or trade happens, 
 these contracts invoke transfer functions of the NFT contracts (ERC1155).
 
 The Freeport smart contracts publish onchain events when significant events occur, such as minting, transfer etc. 
@@ -86,7 +86,7 @@ Amazon SQS are in the pipeline.
 The Cere Freeport Smart contracts are open source and maybe hosted by any 
 EVM-compatible chain. However, for effective integration with a gaming or 
 metaverse system, the cloud services described above, are required. These 
-services maybe hosted by you in your own network or run by Cere for you. 
+services may be hosted by you in your own network or run by Cere for you. 
 Please contact the Cere Ecosystem team 
 for guidance on implementation.
 
