@@ -2,35 +2,28 @@ import bs58 from 'bs58';
 
 import {
     importProvider,
-    getNFTAttachmentAddress,
     createNFTAttachment
 } from "@cere/freeport-sdk";
-
 import {
-    utilStr2ByteArr,
-} from "./util";
+    attachmentContractAddress,
+} from "./config";
 
 // Assumes Metamask or some other web3 wallet extension
 // Assumes browser environment
 export const attach = async (nftId, cid) => {
     const provider = importProvider();
-    // env is one of: "stage" or "prod"
-    const env = "prod"; // or stage or dev. prod is default
-    // Pick smart contract address based on the environment
-    const contractAddress = await getNFTAttachmentAddress(provider, env);
-
+    const contractAddress = attachmentContractAddress();
     // SDK object
     const apiInput = { provider, contractAddress };
-    const cereFreeport = createNFTAttachment(apiInput);
+    const contract = createNFTAttachment(apiInput);
 
-    const tx = await cereFreeport.attachToNFT(
+    const tx = await contract.minterAttachToNFT(
         nftId,
-        // web3.fromAscii(cid)
-        getBytes32FromIpfsHash(cid)
+        getBytes32FromString(cid)
     );
 
     return tx;
 };
 
-const getBytes32FromIpfsHash = (ipfsListing) =>
+const getBytes32FromString = (ipfsListing) =>
    "0x"+bs58.decode(ipfsListing).slice(2).toString('hex');

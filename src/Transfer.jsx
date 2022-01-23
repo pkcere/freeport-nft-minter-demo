@@ -1,6 +1,7 @@
 import bs58 from 'bs58';
 import { useState } from "react";
 import { transfer } from "./utils/transfer";
+import { scanUrl } from "./utils/config";
 
 
 export default (_) => {
@@ -41,8 +42,8 @@ export default (_) => {
 
 const TxLink = ({tx}) => (
   <a
-    href={`https://mumbai.polygonscan.com/tx/${tx}`}
-    target={"polyscanner"}>
+    href={scanUrl(tx)}
+    target={"txscanner"}>
     Transaction Link
   </a>
 );

@@ -10,6 +10,10 @@ import {
     utilSignUpload,
 } from "./util";
 
+import {
+	statusUrl, uploadUrl
+} from "./config";
+
 import { get as httpGet, post as httpPost } from "axios";
 
 // Assumes Metamask or some other web3 wallet extension
@@ -83,5 +87,3 @@ const sleep10 = async () => new Promise((resolve, _) => {
 	setTimeout(() => resolve(), 10*1000);
 });
 
-const statusUrl = (uploadId) => `https://ddc.freeport.stg.cere.network/assets/v1/${uploadId}`;
-const uploadUrl = () => "https://ddc.freeport.stg.cere.network/assets/v1";

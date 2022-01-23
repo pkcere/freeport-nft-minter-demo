@@ -9,7 +9,11 @@ import TokenSupply from "./Supply";
 import TokenList from "./Lister";
 import Transfer from "./Transfer";
 
+import { setChain } from "./utils/config";
+
+
 function App() {
+  setChain("avax_testnet");
   return (
     <div className="App">
       <TokenList/>

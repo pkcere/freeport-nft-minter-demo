@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { mintNftWebApp } from "./utils/mint.js";
+import { scanUrl } from "./utils/config";
 
-export default (_) => {
+const View = (_) => {
   const [tx, setTx] = useState(null);
   const [qty, setQty] = useState(4);
   const [nftId, setNftId] = useState(null);
@@ -29,9 +30,10 @@ export default (_) => {
 
 const TxLink = ({tx}) => (
   <a
-    href={`https://mumbai.polygonscan.com/tx/${tx}`}
-    target={"polyscanner"}>
+    href={scanUrl(tx)}
+    target={"txscanner"}>
     Transaction Link
   </a>
 );
 
+export default View;

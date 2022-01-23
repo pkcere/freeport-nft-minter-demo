@@ -1,17 +1,16 @@
-import bs58 from 'bs58';
 import { useState } from "react";
 import { attach } from "./utils/attach.js";
+import { scanUrl } from "./utils/config";
 
-export default (_) => {
+const View = (_) => {
   const [tx, setTx] = useState(null);
-  const [nftId, setNftId] = useState(1);
-  const [cid, setCid] = useState("Qmddp2ATX5aGrvsCSaQDuXmgmH7U5JeSmYXYrJ3StYWq1n");
+  const [nftId, setNftId] = useState("54643721834029575457854704653666079603751064262668993957281794348513350385668");
+  const [cid, setCid] = useState("QmS4WQmnhQiaNBRkE58d8dp8G9JrxXfFp9yhxD1VvNQBPF");
   const [cidError, setCidError] = useState("");
 
   const onNftIdInput = e => setNftId(e.target.value);
   const onCidInput = e => {
   	try {
-  		const bytes = getBytes32FromIpfsHash(e.target.value);
 	  	setCid(e.target.value);
   	} catch (err) {
   		setCidError(err.toString());
@@ -26,7 +25,7 @@ export default (_) => {
       <h2> Attach NFT to CID </h2>
       <div>
         <span> NFT ID: </span>
-        <input type="number" placeholder="nftId" value={nftId} onChange={onNftIdInput}/>
+        <input placeholder="nftId" value={nftId} onChange={onNftIdInput}/>
       </div>
       <div>
         <span> Content ID: </span>
@@ -41,11 +40,10 @@ export default (_) => {
 
 const TxLink = ({tx}) => (
   <a
-    href={`https://mumbai.polygonscan.com/tx/${tx}`}
-    target={"polyscanner"}>
+    href={scanUrl(tx)}
+    target={"txscanner"}>
     Transaction Link
   </a>
 );
-const getBytes32FromIpfsHash = (ipfsListing) =>
-   "0x"+bs58.decode(ipfsListing).slice(2).toString('hex');
 
+export default View;

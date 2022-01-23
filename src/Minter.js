@@ -7,6 +7,7 @@ import { React, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import CanvasDraw from "react-canvas-draw";
 import { connectWallet, getCurrentWalletConnected, mintNFT } from "./utils/interact.js";
+import { setChainId } from "./utils/config";
 
 const Minter = (props) => {
 
@@ -32,6 +33,11 @@ function addWalletListener() {
         setStatus("🦊 Connect to Metamask using the top right button.");
       }
     });
+
+    window.ethereum.on("chainChanged", (chainId) => {
+      setChainId(chainId);
+    });
+
   } else {
     setStatus(
       <p>
