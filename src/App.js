@@ -8,21 +8,24 @@ import Attacher from "./Attacher";
 import TokenSupply from "./Supply";
 import TokenList from "./Lister";
 import Transfer from "./Transfer";
+import ChainSelector from "./ChainSelector";
 
 import { setChain } from "./utils/config";
 
 
 function App() {
-  setChain("avax_testnet");
+  // setChain("avax_testnet");
+  // window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: "0xa869" }], });
   return (
     <div className="App">
-      <TokenList/>
-      <Transfer/>
-      <TokenSupply />
-      <Attacher />
+      <ChainSelector/>
       <DdcUploader/>
       <DdcDownloader/>
       <FpMinter/>
+      <TokenSupply />
+      <Attacher />
+      <TokenList/>
+      <Transfer/>
       <hr/>
       <Minter></Minter>
     </div>

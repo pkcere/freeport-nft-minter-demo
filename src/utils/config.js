@@ -8,6 +8,8 @@ export const setChainId = (chainId) => {
     setChain(chainName);
     console.log("using chain: ", chainName, chainId);
 };
+
+export const getChainDescriptiveName = (chainId) => chainDescriptiveName[chainId];
 export const freeportContractAddress = () => config[chain].freeport;
 export const attachmentContractAddress = () => config[chain].attachment;
 
@@ -19,6 +21,12 @@ const chainsById = {
     "0x13881": 'polygon_testnet',
     "0x61":    'bsc_testnet',
     "0xa869": 'avax_testnet',
+};
+
+export const chainDescriptiveName = {
+    "0x13881": 'Polygon Testnet',
+    "0x61":    'BSC Testnet',
+    "0xa869": 'AVAX Testnet',
 };
 
 const config = {
