@@ -18,7 +18,8 @@ export const downloadFromDDC = async (makeDownloadUrl, cid) => {
     const signature = await utilSignDownload(provider, minter, cid, accounts[0]);
     const results = await httpGet(makeDownloadUrl(minter, cid), {
     	headers: {
-	    	'X-DDC-Signature': signature
+            'X-DDC-Signature': signature,
+            'X-DDC-Address': minter
     	}
     });
     return results.data;
