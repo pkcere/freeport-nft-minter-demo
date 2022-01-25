@@ -7,9 +7,8 @@ import {
 } from "./config";
 
 
-export const transfer = async (from, to, nftId) => {
+export const transfer = async (contractAddress, from, to, nftId) => {
     const provider = importProvider();
-    const contractAddress = freeportContractAddress();
     const contract = createFreeport({
         provider,
         contractAddress

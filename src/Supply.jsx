@@ -5,7 +5,7 @@ import { supplyGet } from "./utils/supply";
 const SAMPLE_NFT_ID = `54643721834029575457854704653666079603751064262668993958370152248862213931050`;
 const SAMPLE_ACCOUNT = `0x78CF40233b7B5171E469f4044ccde630431d7D23`;
 
-export default (_) => {
+export default ({makeScanUrl, chainConfig, freeportContractAddress}) => {
   const [tx, setTx] = useState(null);
   const [nftId, setNftId] = useState(SAMPLE_NFT_ID);
   const [account, setAccount] = useState(SAMPLE_ACCOUNT);
@@ -13,7 +13,7 @@ export default (_) => {
 
   const onNftIdInput = e => setNftId(e.target.value);
   const submit = async () => {
-    setSupply( await supplyGet(account, nftId));
+    setSupply( await supplyGet(freeportContractAddress, account, nftId));
   }
   return (
     <div className="Minter">
@@ -28,11 +28,4 @@ export default (_) => {
   );
 };
 
-const TxLink = ({tx}) => (
-  <a
-    href={`https://mumbai.polygonscan.com/tx/${tx}`}
-    target={"polyscanner"}>
-    Transaction Link
-  </a>
-);
 

@@ -13,11 +13,9 @@ import {
 
 // Assumes Metamask or some other web3 wallet extension
 // Assumes browser environment
-export const mintNftWebApp = async (quantity, strMetadata) => {
+export const mintNftWebApp = async (contractAddress, quantity, strMetadata) => {
     // e.g. "ethereum" object Metamask
     const provider = importProvider();
-
-    const contractAddress = freeportContractAddress();
     const apiInput = { provider, contractAddress };
     const contract = createFreeport(apiInput);
 

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { attach } from "./utils/attach.js";
-import { scanUrl } from "./utils/config";
 
-const View = (_) => {
+const View = ({ makeScanUrl, chainConfig, attachmentContractAddress}) => {
   const [tx, setTx] = useState(null);
   const [nftId, setNftId] = useState("54643721834029575457854704653666079603751064262668993957281794348513350385668");
   const [cid, setCid] = useState("QmS4WQmnhQiaNBRkE58d8dp8G9JrxXfFp9yhxD1VvNQBPF");
   const [cidError, setCidError] = useState("");
+  const [statusMsg, setStatusMsg] = useState(null);
 
   const onNftIdInput = e => setNftId(e.target.value);
   const onCidInput = e => {
@@ -17,8 +17,15 @@ const View = (_) => {
   	}
   };
   const submitAttach = async () => {
-    const tx = await attach(nftId, cid);
-    setTx(tx.hash);
+    setTx(null);
+    setStatusMsg("Attaching token + CID on " + chainConfig.descriptiveName);
+    try {
+      const tx = await attach(attachmentContractAddress, nftId, cid);
+      setTx(tx.hash);
+      setStatusMsg("Attached token + CID on successfully on " + chainConfig.descriptiveName);
+    } catch (err) {
+      setStatusMsg("Attach failed: " + String(err));
+    }
   }
   return (
     <div className="Minter">
@@ -33,14 +40,15 @@ const View = (_) => {
         <span style={{color:"red"}}>{cidError}</span>
       </div>
       <button onClick={submitAttach}> Attach </button>
-      { tx ? <TxLink tx={tx}/> : ""}
+      <div> { statusMsg } </div>
+      { tx ? <TxLink url={makeScanUrl(tx)}/> : ""}
     </div>
   );
 };
 
-const TxLink = ({tx}) => (
+const TxLink = ({url}) => (
   <a
-    href={scanUrl(tx)}
+    href={url}
     target={"txscanner"}>
     Transaction Link
   </a>

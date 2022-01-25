@@ -1,10 +1,8 @@
-import bs58 from 'bs58';
 import { useState } from "react";
 import { transfer } from "./utils/transfer";
-import { scanUrl } from "./utils/config";
 
 
-export default (_) => {
+const View = ({ makeScanUrl, chainConfig, freeportContractAddress}) => {
   const [tx, setTx] = useState(null);
   const [from, setFrom] = useState("0x78CF40233b7B5171E469f4044ccde630431d7D23");
   const [to, setTo] = useState("0xC00A12e3bb6F6F68802D733fFE3F730C1074282F");
@@ -15,7 +13,7 @@ export default (_) => {
   const onNftIdInput = e => setNftId(e.target.value);
 
   const submit = async () => {
-  	const tx = await transfer(from, to, nftId);
+  	const tx = await transfer(freeportContractAddress, from, to, nftId);
   	setTx(tx.hash);
   };
 
@@ -35,16 +33,18 @@ export default (_) => {
         <input placeholder="nftId" value={nftId} onChange={onNftIdInput}/>
       </div>
       <button onClick={submit}> Transfer </button>
-      { tx ? <TxLink tx={tx}/> : null}
+      { tx ? <TxLink url={makeScanUrl(tx)}/> : null}
     </div>
   );
 };
 
-const TxLink = ({tx}) => (
+const TxLink = ({url}) => (
   <a
-    href={scanUrl(tx)}
+    href={url}
     target={"txscanner"}>
     Transaction Link
   </a>
 );
 
+
+export default View;

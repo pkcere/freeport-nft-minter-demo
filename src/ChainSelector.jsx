@@ -1,25 +1,9 @@
-import { useEffect, useState } from "react";
-import { chainDescriptiveName, getChainDescriptiveName, setChainId } from "./utils/config";
 
-const View = () => {
-  const [chainName, selectChainName] = useState('polygon_testnet');
-  const [chainId, selectChainId] = useState('0x13881');
-      window.ethereum.on('connect', (connection) => {
-        selectChainId(connection.chainId);
-        selectChainName(getChainDescriptiveName(connection.chainId));
-      });
-      window.ethereum.on("chainChanged", (chainId) => {
-        selectChainName(getChainDescriptiveName(chainId));
-      });
+const View = ({updateChainId, chainConfig, chainDescriptiveName}) => {
+  const chainId = chainConfig.chainId;
   const onSelectChain = async (event) => {
     const selected = event.target.value;
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: selected }],
-    });
-    selectChainName(getChainDescriptiveName(selected));
-    selectChainId(selected);
-    setChainId(selected);
+    await updateChainId(selected);
   }
 
   const options = Object.keys(chainDescriptiveName).map(key => (
@@ -29,6 +13,7 @@ const View = () => {
   return (
     <div>
       <div> Select Chain: <select onChange={onSelectChain} value={chainId}> {options} </select> </div>
+      {/* <pre> { JSON.stringify(chainConfig) } </pre> */}
     </div>
   );
 };

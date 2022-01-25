@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { downloadFromDDC } from "./utils/download";
 
-const DdcDownload = (props) => {
-	const [cid, setCid] = useState(props.cid);
+const DdcDownload = ({makeDownloadUrl}) => {
+	const [cid, setCid] = useState(null);
 	const [content, setContent] = useState(null);
 	const initiateDownload = async (_) => {
-		const content = await downloadFromDDC(cid);
+		const content = await downloadFromDDC(makeDownloadUrl, cid);
 		setContent(content);
 	};
     const onCidInput = e => setCid(e.target.value);

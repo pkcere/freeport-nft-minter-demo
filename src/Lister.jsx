@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
 import { listTokens } from "./utils/list.js";
 
-const TokenList =  (_) => {
+const TokenList =  ({chainConfig, makeOwnedTokenListUrl}) => {
 	const [ownedList, setOwnedList] = useState(null);
 	const getList = useCallback(async () => {
-		const owned = await listTokens();
+		const owned = await listTokens(makeOwnedTokenListUrl);
 		// console.log({minted, owned});
 		//setMintedList(minted);
 		setOwnedList(owned);

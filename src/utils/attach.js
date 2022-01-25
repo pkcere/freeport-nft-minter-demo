@@ -4,15 +4,11 @@ import {
     importProvider,
     createNFTAttachment
 } from "@cere/freeport-sdk";
-import {
-    attachmentContractAddress,
-} from "./config";
 
 // Assumes Metamask or some other web3 wallet extension
 // Assumes browser environment
-export const attach = async (nftId, cid) => {
+export const attach = async (contractAddress, nftId, cid) => {
     const provider = importProvider();
-    const contractAddress = attachmentContractAddress();
     // SDK object
     const apiInput = { provider, contractAddress };
     const contract = createNFTAttachment(apiInput);

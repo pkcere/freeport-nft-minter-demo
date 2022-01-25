@@ -11,14 +11,14 @@ import {
 } from "./util";
 
 import {
-	statusUrl, uploadUrl
+	statusUrl
 } from "./config";
 
 import { get as httpGet, post as httpPost } from "axios";
 
 // Assumes Metamask or some other web3 wallet extension
 // Assumes browser environment
-export const upload2DDC = async (data, title, description) => {
+export const upload2DDC = async (url, data, title, description) => {
     // e.g. "ethereum" object Metamask
     const provider = importProvider()
     const ethereum = utilProvider2Ethereum(provider);
@@ -36,7 +36,7 @@ export const upload2DDC = async (data, title, description) => {
         title, // Asset title
         description //Descriptive text
     };
-    const httpRes = await upload(uploadUrl(), uploadData);
+    const httpRes = await upload(url, uploadData);
     const cid = await waitForDDCUpload(httpRes.data);
     return cid;
 };

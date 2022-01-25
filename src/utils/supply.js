@@ -5,11 +5,11 @@ import {
 import {
     freeportContractAddress,
 } from "./config";
-export const supplyGet = async (address, nftId) => {
+export const supplyGet = async (contractAddress, address, nftId) => {
     const provider = importProvider();
     const contract = createFreeport({
         provider,
-        contractAddress: freeportContractAddress()
+        contractAddress
     });
     const balance = await contract.balanceOf(address, nftId);
     return balance.toNumber();
