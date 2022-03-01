@@ -33,7 +33,7 @@ const config = {
         freeport: "0xAD56017BAD84Fa4Eab489314C1e158C6adaca598",
         attachment: "0x1282fdeC36aC4aaf025059D69077d4450703eeD0",
         proxyServer: "https://ddc.freeport.dev.cere.network",
-        apiServer: `https://api.freeport.stg.cere.network`,
+        apiServer: `https://api.freeport.dev.cere.network`,
         scanner: "https://mumbai.polygonscan.com/tx",
     },
     bsc_testnet: {
@@ -60,6 +60,7 @@ const downloadUrl = (urlBase) => (minter, cid) => `${urlBase}/assets/v1/${minter
 
 function App() {
   const [chainConfig, setChainConfig] = useState(defaultChainConfig);
+  const [sessionToken, setSessionToken] = useState(null);
   const chain = chainConfig.name;
   console.log("chainconfig", chainConfig);
 
@@ -72,7 +73,7 @@ function App() {
   const makeMintedTokenListUrl = listMintedUrl(config[chain].apiServer);
   const makeDownloadUrl = downloadUrl(config[chain].proxyServer);
 
-  const uploadUrl = `${config[chain].proxyServer}/assets/v1`;
+  const uploadUrl = `${config[chain].proxyServer}`;
   const makeScanUrl = (tx) => `${config[chain].scanner}/${tx}`;
 
   const setChainId = (chainId) => {
@@ -107,10 +108,16 @@ function App() {
       window.ethereum.removeListener("chainChanged", onChainChange);
     }
   });
+
+  const onLogin = (token) => setSessionToken(token);
+
   return (
     <div className="App">
       <ChainSelector updateChainId={updateChainId} chainConfig={chainConfig}
         chainDescriptiveName={chainDescriptiveName}/>
+
+      {/* <MetamaskLogin onLogin={onLogin}/> */}
+
       <DdcUploader chainConfig={chainConfig}
         uploadUrl={uploadUrl}  makeStatusUrl={makeStatusUrl}/>
       <FpMinter chainConfig={chainConfig} makeScanUrl={makeScanUrl} freeportContractAddress={freeportContractAddress}/>
@@ -131,5 +138,37 @@ function App() {
     </div>
   );
 }
+
+/*
+
+const MetamaskLogin = ({minter, onLogin, baseUrl}) => {
+  const login = async () => {
+    const nonce = await getNonce(minter, url);
+    const jwt = await authorize(url, provider, minter, minterEncryptionKey, nonce);
+    return onLogin(jwt);
+  }
+  return (
+    <button onClick={login}> Login with Metamask </button>
+  );
+};
+
+
+// Authorize
+const authorize = async (baseUrl, provider, minter, encryptionPublicKey, nonce) => {
+  const msgToSign = `${minter}${encryptionPublicKey}${nonce}`;
+    const signature = await utilSign(provider, minter, msgToSign);
+    const authUrl = `${baseUrl}/auth/v1/${minter}`;
+    const result = await httpPost(authUrl, {encryptionPublicKey, signature});
+    console.log("Auth result", result.data);
+    const token = result.data.accessToken;
+    return token;
+};
+
+const getPreviewUrl = async (baseUrl, minter, cid, jwt) => {
+  const result = await httpGet(`${baseUrl}/assets/v2/${minter}/${cid}/preview`);
+    console.log("Preview result", result);
+  return result.data;
+}
+*/
 
 export default App;
