@@ -1,4 +1,24 @@
-import { useState, useEffect } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { useState, useEffect, useContext } from "react";
+import { get as httpGet, post as httpPost } from "axios";
+import LocalStorage from "local-storage";
+
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Stack from 'react-bootstrap/Stack';
+import Accordion from 'react-bootstrap/Accordion'
+import AccordionContext from 'react-bootstrap/AccordionContext'
+import { useAccordionButton } from 'react-bootstrap/AccordionButton';
+
+import { importProvider, } from "@cere/freeport-sdk";
+import {
+    utilProvider2Ethereum,
+    utilGetAccounts,
+    utilGetOwnerAddress,
+    utilGetEncPubKey,
+    utilSign,
+} from "./utils/util";
 import './App.css';
 import Minter from './Minter'
 import FpMinter from './Fp-Minter'
@@ -10,6 +30,8 @@ import TokenSupply from "./Supply";
 import TokenList from "./Lister";
 import Transfer from "./Transfer";
 import ChainSelector from "./ChainSelector";
+
+
 
 const defaultChainConfig = {
   name: "polygon_testnet",
@@ -61,6 +83,10 @@ const downloadUrl = (urlBase) => (minter, cid) => `${urlBase}/assets/v1/${minter
 function App() {
   const [chainConfig, setChainConfig] = useState(defaultChainConfig);
   const [sessionToken, setSessionToken] = useState(null);
+  const [minter, setMinter] = useState(null);
+  const [minterEncryptionKey, setMinterEncryptionKey] = useState(null);
+  const [provider, setProvider] = useState(null);
+
   const chain = chainConfig.name;
   console.log("chainconfig", chainConfig);
 
@@ -109,48 +135,124 @@ function App() {
     }
   });
 
-  const onLogin = (token) => setSessionToken(token);
+  // read from local storage
+  useEffect(() => {
+    
+    const minter = LocalStorage.get('minter');
+    const minterEncryptionKey = LocalStorage.get('minterEncryptionKey');
+    const sessionToken = LocalStorage.get('sessionToken');
+
+    setMinter(minter);
+    setMinterEncryptionKey(minterEncryptionKey);
+    setSessionToken(sessionToken);
+  })
+
+  const logout = () => {
+    setMinter(null);
+    setMinterEncryptionKey(null);
+    setProvider(null);
+    setSessionToken(null);
+    LocalStorage.set('minter', null);
+    LocalStorage.set('minterEncryptionKey', null);
+    LocalStorage.set('sessionToken', null);
+  }
+
+  const login = async () => {
+    const provider = importProvider();
+    const ethereum = utilProvider2Ethereum(provider);
+    const accounts = await utilGetAccounts(ethereum);
+    const minter = await utilGetOwnerAddress(ethereum, accounts);
+    const minterEncryptionKey = await utilGetEncPubKey(ethereum, accounts);
+
+    const url = config[chain].proxyServer;
+
+    const nonce = await getNonce(minter, url);
+    const sessionToken = await authorize(url, provider, minter, minterEncryptionKey, nonce);
+
+    LocalStorage.set('minter', minter);
+    LocalStorage.set('minterEncryptionKey', minterEncryptionKey);
+    LocalStorage.set('sessionToken', sessionToken);
+
+    setMinter(minter);
+    setMinterEncryptionKey(minterEncryptionKey);
+    setProvider(provider);
+    setSessionToken(sessionToken);
+  };
+
 
   return (
     <div className="App">
       <ChainSelector updateChainId={updateChainId} chainConfig={chainConfig}
         chainDescriptiveName={chainDescriptiveName}/>
 
-      {/* <MetamaskLogin onLogin={onLogin}/> */}
+      { sessionToken ? 
+        <Stack gap={3}>
+          <MetamaskLogout address={minter} logout={logout}/>
+          <Accordion defaultActiveKey="0">
+            <Section index="0" title="Upload">
+              <DdcUploader chainConfig={chainConfig}
+                sessionToken={sessionToken}
+                minter={minter} minterEncryptionKey={minterEncryptionKey}
+                uploadUrl={uploadUrl}  makeStatusUrl={makeStatusUrl}/>
+            </Section>
+            <Section index="1" title="Minter">
+              <FpMinter chainConfig={chainConfig} makeScanUrl={makeScanUrl} freeportContractAddress={freeportContractAddress}/>
+            </Section>
+            <Section index="2" title="Supply">
+              <TokenSupply chainConfig={chainConfig}
+                freeportContractAddress={freeportContractAddress}/>
+            </Section>
+            <Section index="3" title="Attach">
+              <Attacher chainConfig={chainConfig} makeScanUrl={makeScanUrl}
+                attachmentContractAddress={attachmentContractAddress}/>
+            </Section>
+            <Section index="4" title="Download">
+              <DdcDownloader chainConfig={chainConfig}
+                makeDownloadUrl={makeDownloadUrl}/>
+            </Section>
+            <Section index="5" title="My Tokens">
+              <TokenList chainConfig={chainConfig}
+                makeOwnedTokenListUrl={makeOwnedTokenListUrl}
+                makeMintedTokenListUrl={makeMintedTokenListUrl}
+              />
+            </Section>
+            <Section index="6" title="Transfer">
+              <Transfer chainConfig={chainConfig}  makeScanUrl={makeScanUrl}
+                freeportContractAddress={freeportContractAddress}/>
+            </Section>
+          </Accordion>
+        </Stack>
+        : 
+        <div>
+            <MetamaskLogin url={config[chain].proxyServer} login={login}/>
+        </div>
+      }
 
-      <DdcUploader chainConfig={chainConfig}
-        uploadUrl={uploadUrl}  makeStatusUrl={makeStatusUrl}/>
-      <FpMinter chainConfig={chainConfig} makeScanUrl={makeScanUrl} freeportContractAddress={freeportContractAddress}/>
-      <TokenSupply chainConfig={chainConfig}
-        freeportContractAddress={freeportContractAddress}/>
-      <Attacher chainConfig={chainConfig} makeScanUrl={makeScanUrl}
-        attachmentContractAddress={attachmentContractAddress}/>
-      <DdcDownloader chainConfig={chainConfig}
-        makeDownloadUrl={makeDownloadUrl}/>
-      <TokenList chainConfig={chainConfig}
-        makeOwnedTokenListUrl={makeOwnedTokenListUrl}
-        makeMintedTokenListUrl={makeMintedTokenListUrl}
-        />
-      <Transfer chainConfig={chainConfig}  makeScanUrl={makeScanUrl}
-        freeportContractAddress={freeportContractAddress}/>
-      <hr/>
-      <Minter></Minter>
     </div>
   );
 }
 
-/*
 
-const MetamaskLogin = ({minter, onLogin, baseUrl}) => {
-  const login = async () => {
-    const nonce = await getNonce(minter, url);
-    const jwt = await authorize(url, provider, minter, minterEncryptionKey, nonce);
-    return onLogin(jwt);
-  }
-  return (
-    <button onClick={login}> Login with Metamask </button>
-  );
-};
+const Section = ({title, index, children}) => (
+    <Card>
+      <Card.Header>
+        <ContextAwareToggle eventKey={index}>{title}</ContextAwareToggle>
+      </Card.Header>
+      <Accordion.Collapse eventKey={index}>
+        <Card.Body>{children}</Card.Body>
+      </Accordion.Collapse>
+    </Card>
+);
+
+const MetamaskLogout = ({logout, address}) => (
+    <div>
+      <Button variant="primary" onClick={logout}> Logout </Button>
+    </div>
+);
+
+const MetamaskLogin = ({login}) => (
+    <Button onClick={login}> Login with Metamask </Button>
+);
 
 
 // Authorize
@@ -164,11 +266,35 @@ const authorize = async (baseUrl, provider, minter, encryptionPublicKey, nonce) 
     return token;
 };
 
-const getPreviewUrl = async (baseUrl, minter, cid, jwt) => {
-  const result = await httpGet(`${baseUrl}/assets/v2/${minter}/${cid}/preview`);
-    console.log("Preview result", result);
+// Get NONCE for session
+const getNonce = async (minter, baseUrl) => {
+  const result = await httpGet(`${baseUrl}/auth/v1/${minter}/nonce`);
+  console.log("NONCE is", result.data);
   return result.data;
-}
-*/
+};
+
+
 
 export default App;
+
+
+function ContextAwareToggle({ children, eventKey, callback }) {
+  const { activeEventKey } = useContext(AccordionContext);
+
+  const decoratedOnClick = useAccordionButton(
+    eventKey,
+    () => callback && callback(eventKey),
+  );
+
+  const isCurrentEventKey = activeEventKey === eventKey;
+
+  return (
+    <Button
+      variant="light"
+      style={{width: "100%", padding: 0}}
+      onClick={decoratedOnClick}
+    >
+      {children}
+    </Button>
+  );
+}
